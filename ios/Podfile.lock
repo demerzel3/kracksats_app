@@ -1,0 +1,40 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_nfc_reader (0.0.1):
+    - Flutter
+    - VYNFCKit
+  - OneSignal (2.16.1)
+  - onesignal_flutter (2.6.2):
+    - Flutter
+    - OneSignal (= 2.16.1)
+  - VYNFCKit (0.3.2)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_nfc_reader (from `.symlinks/plugins/flutter_nfc_reader/ios`)
+  - OneSignal (< 3.0, >= 2.9.3)
+  - onesignal_flutter (from `.symlinks/plugins/onesignal_flutter/ios`)
+
+SPEC REPOS:
+  trunk:
+    - OneSignal
+    - VYNFCKit
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_nfc_reader:
+    :path: ".symlinks/plugins/flutter_nfc_reader/ios"
+  onesignal_flutter:
+    :path: ".symlinks/plugins/onesignal_flutter/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_nfc_reader: 67d71071d779d28b827ea50dcbe00d09286f253d
+  OneSignal: 5f6514ec2b931306eb067acb124afbb2e49970af
+  onesignal_flutter: 260bb95c0a2d791c990c7bd8749525c9834d43fc
+  VYNFCKit: 86a9b711fd1f34f6f7128a2a883cd58dbd781b9d
+
+PODFILE CHECKSUM: 89690842963ffaf7d641602063481bbd27f3fc0e
+
+COCOAPODS: 1.10.0
