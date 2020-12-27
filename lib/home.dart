@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
 import 'dart:async';
 
+import 'package:flutter_biopass/flutter_biopass.dart' show BioPass;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:otp/otp.dart';
+import 'package:prompt_dialog/prompt_dialog.dart';
 
 class Home extends StatefulWidget {
   Home({Key key, this.title}) : super(key: key);
@@ -15,6 +18,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // _tags is a list of scanned tags
+  final _bioPass = BioPass();
   List<String> _tags = [];
 
   void _readNFC(BuildContext context) {
@@ -23,6 +27,12 @@ class _HomeState extends State<Home> {
         _tags.insert(0, response.content);
       });
     });
+  }
+
+  String generateTOTP(String secret) {
+    return OTP.generateTOTPCodeString(
+        secret, DateTime.now().millisecondsSinceEpoch,
+        algorithm: Algorithm.SHA1, interval: 30, length: 6, isGoogle: true);
   }
 
   @override
@@ -46,6 +56,26 @@ class _HomeState extends State<Home> {
                 );
               },
             ),
+            FlatButton(
+                child: Text("Generate code"),
+                onPressed: () async {
+                  final secret = await _bioPass.retreive(
+                      withPrompt: "Retrieve TOTP secret");
+
+                  // No secret stored
+                  if (secret == null) {
+                    // Prompt for the secret
+                    final newSecret = await prompt(context);
+                    // Store it
+                    await _bioPass.store(newSecret);
+
+                    print('Your fancy TOTP code is: ' +
+                        this.generateTOTP(newSecret));
+                  } else {
+                    print('Your fancy TOTP code is: ' +
+                        this.generateTOTP(secret));
+                  }
+                }),
             FlatButton(
                 child: Text("Notifications"),
                 onPressed: () {
