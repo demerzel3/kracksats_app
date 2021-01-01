@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kracksats_app/home.dart';
 
@@ -5,11 +6,11 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return CupertinoApp(
       title: 'Kracksats',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+      theme: CupertinoThemeData(
+        brightness: Brightness.dark,
+        primaryColor: Color.fromARGB(255, 150, 62, 235),
       ),
       home: Home(title: 'Kracksats'),
     );
