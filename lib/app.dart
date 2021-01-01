@@ -10,7 +10,7 @@ class App extends StatelessWidget {
       title: 'Kracksats',
       theme: CupertinoThemeData(
         brightness: Brightness.dark,
-        primaryColor: Color.fromARGB(255, 150, 62, 235),
+        primaryColor: Color.fromARGB(255, 129, 90, 245),
       ),
       home: Home(title: 'Kracksats'),
     );
