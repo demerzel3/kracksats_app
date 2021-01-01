@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_biopass/flutter_biopass.dart' show BioPass;
+import 'package:kracksats_app/api.dart';
 import 'package:otp/otp.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 
@@ -16,6 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _isStacking = false;
+  Future<Order> _futureOrder;
   final _bioPass = BioPass();
 
   String _generateTOTP(String secret) =>
@@ -48,11 +50,10 @@ class _HomeState extends State<Home> {
           _isStacking = true;
         });
         final secret = await _getSecret();
-
-        print('Your fancy TOTP code is: ' + _generateTOTP(secret));
+        final otp = _generateTOTP(secret);
 
         setState(() {
-          _isStacking = false;
+          _futureOrder = newOrder(otp);
         });
       },
     );
@@ -78,7 +79,41 @@ class _HomeState extends State<Home> {
           // buy
           return Center(
             child: _isStacking
-                ? CupertinoActivityIndicator()
+                ? FutureBuilder<Order>(
+                    future: _futureOrder,
+                    builder: (context, snapshot) {
+                      final reset = () {
+                        setState(() {
+                          _isStacking = false;
+                          _futureOrder = null;
+                        });
+                      };
+
+                      if (snapshot.hasData) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text("Fucking legend!"),
+                            SizedBox(height: 16),
+                            CupertinoButton(
+                                child: const Text('Ok'), onPressed: reset),
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text("${snapshot.error}"),
+                            SizedBox(height: 16),
+                            CupertinoButton(
+                                child: const Text('Ok'), onPressed: reset),
+                          ],
+                        );
+                      }
+
+                      return CupertinoActivityIndicator();
+                    },
+                  )
                 : _buildBuyButton(context),
           );
         }
