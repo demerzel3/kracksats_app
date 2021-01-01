@@ -18,10 +18,44 @@ class _HomeState extends State<Home> {
   bool _isStacking = false;
   final _bioPass = BioPass();
 
-  String generateTOTP(String secret) {
-    return OTP.generateTOTPCodeString(
-        secret, DateTime.now().millisecondsSinceEpoch,
-        algorithm: Algorithm.SHA1, interval: 30, length: 6, isGoogle: true);
+  String _generateTOTP(String secret) =>
+      OTP.generateTOTPCodeString(secret, DateTime.now().millisecondsSinceEpoch,
+          algorithm: Algorithm.SHA1, interval: 30, length: 6, isGoogle: true);
+
+  Future<String> _retrieveSecret() =>
+      _bioPass.retreive(withPrompt: "Retrieve TOTP secret");
+
+  Future<String> _promptAndStoreSecret() async {
+    // Prompt for the secret
+    final newSecret = await prompt(context);
+    // Store it
+    await _bioPass.store(newSecret);
+
+    return newSecret;
+  }
+
+  Future<String> _getSecret() async {
+    final storedSecret = await _retrieveSecret();
+    return storedSecret != null ? storedSecret : await _promptAndStoreSecret();
+  }
+
+  Widget _buildBuyButton(BuildContext context) {
+    return CupertinoButton.filled(
+      padding: EdgeInsets.fromLTRB(48, 24, 48, 24),
+      child: const Text('Stack some sats'),
+      onPressed: () async {
+        setState(() {
+          _isStacking = true;
+        });
+        final secret = await _getSecret();
+
+        print('Your fancy TOTP code is: ' + _generateTOTP(secret));
+
+        setState(() {
+          _isStacking = false;
+        });
+      },
+    );
   }
 
   @override
@@ -43,37 +77,9 @@ class _HomeState extends State<Home> {
         if (index == 1) {
           // buy
           return Center(
-            child: CupertinoButton.filled(
-              padding: EdgeInsets.fromLTRB(48, 24, 48, 24),
-              child: _isStacking
-                  ? CupertinoActivityIndicator()
-                  : const Text('Stack some sats'),
-              onPressed: () async {
-                setState(() {
-                  _isStacking = true;
-                });
-                final secret =
-                    await _bioPass.retreive(withPrompt: "Retrieve TOTP secret");
-
-                // No secret stored
-                if (secret == null) {
-                  // Prompt for the secret
-                  final newSecret = await prompt(context);
-                  // Store it
-                  await _bioPass.store(newSecret);
-
-                  print('Your fancy TOTP code is: ' +
-                      this.generateTOTP(newSecret));
-                } else {
-                  print(
-                      'Your fancy TOTP code is: ' + this.generateTOTP(secret));
-
-                  setState(() {
-                    _isStacking = false;
-                  });
-                }
-              },
-            ),
+            child: _isStacking
+                ? CupertinoActivityIndicator()
+                : _buildBuyButton(context),
           );
         }
 
