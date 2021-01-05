@@ -7,8 +7,11 @@ import Flutter
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    application.isIdleTimerDisabled = true
-    
+    #if DEBUG
+      // Keep app always on while debugging, very convenient.
+      application.isIdleTimerDisabled = true
+    #endif
+
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
